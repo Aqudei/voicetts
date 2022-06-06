@@ -29,7 +29,7 @@ namespace VoiceTTS.ViewModels
     public class TTSViewModel : BindableBase
     {
         private readonly ConcurrentQueue<VoiceMakerRequest> _sendRequests = new ConcurrentQueue<VoiceMakerRequest>();
-        private readonly ConcurrentQueue<string> _playRequests = new ConcurrentQueue<string>();
+        // private readonly ConcurrentQueue<string> _playRequests = new ConcurrentQueue<string>();
 
 
         private const string VOICEMAKER_KEY = "VOICEMAKER_KEY";
@@ -190,25 +190,25 @@ namespace VoiceTTS.ViewModels
 
             _senderThread = new Thread(SenderThreadHandler);
             _senderThread.Start();
-            _playerThread = new Thread(PlayerThreadHandler);
-            _playerThread.Start();
+            //_playerThread = new Thread(PlayerThreadHandler);
+            //_playerThread.Start();
 
         }
 
-        private void PlayerThreadHandler()
-        {
-            while (true)
-            {
-                if (_playRequests.TryDequeue(out var audioUrl))
-                {
-                    PlayAudio(audioUrl);
-                }
-                else
-                {
-                    Thread.Sleep(1);
-                }
-            }
-        }
+        //private void PlayerThreadHandler()
+        //{
+        //    while (true)
+        //    {
+        //        if (_playRequests.TryDequeue(out var audioUrl))
+        //        {
+        //            PlayAudio(audioUrl);
+        //        }
+        //        else
+        //        {
+        //            Thread.Sleep(1);
+        //        }
+        //    }
+        //}
 
         private void SenderThreadHandler()
         {
@@ -718,24 +718,21 @@ namespace VoiceTTS.ViewModels
         }
 
 
-        private void SendAudioRequest(VoiceMakerRequest req)
+        private async Task SendAudioRequest(VoiceMakerRequest req)
         {
-            Task.Run(async () =>
+            try
             {
-                try
-                {
-                    var voiceInfo = _voiceInfos.FirstOrDefault(v => v.VoiceId == VoiceId);
-                    if (voiceInfo == null)
-                        return;
+                var voiceInfo = _voiceInfos.FirstOrDefault(v => v.VoiceId == VoiceId);
+                if (voiceInfo == null)
+                    return;
 
-                    var audioUrl = await _voiceMaker.GenerateAudio(req);
-                    _playRequests.Enqueue(audioUrl);
-                }
-                catch (Exception e)
-                {
-                    await ThisDispatcher.BeginInvoke(() => ErrorText += $"\n{DateTime.Now} {e.Message}");
-                }
-            });
+                var audioUrl = await _voiceMaker.GenerateAudio(req);
+                PlayAudio(audioUrl);
+            }
+            catch (Exception e)
+            {
+                await ThisDispatcher.BeginInvoke(() => ErrorText += $"\n{DateTime.Now} {e.Message}");
+            }
         }
 
 
