@@ -189,6 +189,7 @@ namespace VoiceTTS.ViewModels
             PropertyChanged += TTSViewModel_PropertyChanged;
 
             _senderThread = new Thread(SenderThreadHandler);
+            _senderThread.IsBackground = true;  
             _senderThread.Start();
             //_playerThread = new Thread(PlayerThreadHandler);
             //_playerThread.Start();

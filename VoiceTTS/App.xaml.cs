@@ -25,6 +25,8 @@ namespace VoiceTTS
 
         protected override Window CreateShell()
         {
+            InitVoices().GetAwaiter().GetResult();
+
             return Container.Resolve<MainWindow>();
         }
 
@@ -54,7 +56,6 @@ namespace VoiceTTS
         {
 
             base.OnInitialized();
-            InitVoices().Wait();
 
             this.DispatcherUnhandledException += App_DispatcherUnhandledException;
         }
@@ -64,44 +65,41 @@ namespace VoiceTTS
             Logger.Debug(e);
         }
 
-        private Task InitVoices()
+        private async Task InitVoices()
         {
-            return Task.Run(async () =>
+            try
             {
-                try
+                var voiceMaker = Container.Resolve<VoiceMakerClient>();
+
+                using (var db = new TTSContext())
                 {
-                    var voiceMaker = Container.Resolve<VoiceMakerClient>();
-
-                    using (var db = new TTSContext())
+                    if (db.Voices.Any())
                     {
-                        if (db.Voices.Any())
-                        {
-                            var result = MessageBox.Show("Voices already present in database. Do you want to re-fetch voices from online?", "Download voices", MessageBoxButton.YesNo);
-                            if (result == MessageBoxResult.Yes)
-                            {
-                                var voices = await voiceMaker.GetVoicesFromApi();
-
-                                //File.WriteAllText(@".\voices.json",JsonConvert.SerializeObject(voices));
-
-
-                                db.Voices.RemoveRange(db.Voices.ToList());
-                                db.Voices.AddRange(voices);
-                                db.SaveChanges();
-                            }
-                        }
-                        else
+                        var result = MessageBox.Show("Voices already present in database. Do you want to re-fetch voices from online?", "Download voices", MessageBoxButton.YesNo);
+                        if (result == MessageBoxResult.Yes)
                         {
                             var voices = await voiceMaker.GetVoicesFromApi();
+
+                            //File.WriteAllText(@".\voices.json",JsonConvert.SerializeObject(voices));
+
+
+                            db.Voices.RemoveRange(db.Voices.ToList());
                             db.Voices.AddRange(voices);
                             db.SaveChanges();
                         }
                     }
+                    else
+                    {
+                        var voices = await voiceMaker.GetVoicesFromApi();
+                        db.Voices.AddRange(voices);
+                        db.SaveChanges();
+                    }
                 }
-                catch (Exception ex)
-                {
-                    Logger.Debug(ex);
-                }
-            });
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
         }
     }
 }
