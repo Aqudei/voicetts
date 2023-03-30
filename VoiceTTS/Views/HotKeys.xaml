@@ -1,0 +1,100 @@
+﻿<UserControl x:Class="VoiceTTS.Views.HotKeys"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+             mah:DialogParticipation.Register="{Binding}"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    <prism:Dialog.WindowStyle>
+        <Style TargetType="mah:MetroWindow">
+            <Setter Property="prism:Dialog.WindowStartupLocation" Value="CenterScreen" />
+            <Setter Property="ResizeMode" Value="NoResize"/>
+            <Setter Property="ShowInTaskbar" Value="False"/>
+            <Setter Property="ShowCloseButton" Value="False"/>
+            <Setter Property="SizeToContent" Value="WidthAndHeight"/>
+            <Setter Property="Title" Value="{Binding Title}"/>
+        </Style>
+    </prism:Dialog.WindowStyle>
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock>[CTRL + SHIFY + {KEY}]</TextBlock>
+        <StackPanel Orientation="Vertical" Grid.Row="1">
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="100">Manual Send</Label>
+                <TextBox Text="{Binding KeyManualSend}" Width="200" MaxLines="1"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="100">Volume Up</Label>
+                <TextBox Text="{Binding KeyVolumeUp}" Width="200" MaxLines="1"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="100">Volume Down</Label>
+                <TextBox Text="{Binding KeyVolumeDown}" Width="200" MaxLines="1"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="100">Pitch Up</Label>
+                <TextBox Text="{Binding KeyPitchUp}" Width="200" MaxLines="1"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="100">Pitch Down</Label>
+                <TextBox Text="{Binding KeyPitchDown}" Width="200" MaxLines="1"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="100">Speed Up</Label>
+                <TextBox Text="{Binding KeySpeedUp}" Width="200" MaxLines="1"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="100">Speed Down</Label>
+                <TextBox Text="{Binding KeySpeedDown}" Width="200" MaxLines="1"/>
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1">
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="150">Append Voice Effect</Label>
+                <TextBox Text="{Binding KeyAppendVoice}" Width="200" MaxLines="1"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="150">Append Pause</Label>
+                <TextBox Text="{Binding KeyAppendPause}" Width="200" MaxLines="1"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="150">Append Emphasis</Label>
+                <TextBox Text="{Binding KeyAppendEmphasis}" Width="200" MaxLines="1"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="150">Append Speed</Label>
+                <TextBox Text="{Binding KeyAppendSpeed}" Width="200" MaxLines="1"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="150">Append Pitch</Label>
+                <TextBox Text="{Binding KeyAppendPitch}" Width="200" MaxLines="1"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="150">Append Volume</Label>
+                <TextBox Text="{Binding KeyAppendVolume}" Width="200" MaxLines="1"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="150">Say As</Label>
+                <TextBox Text="{Binding KeyAppendSayAs}" Width="200" MaxLines="1"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5">
+                <Label Width="150">Restart App</Label>
+                <TextBox Text="{Binding KeyAppRestart}" Width="200" MaxLines="1"/>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Center" 
+                        Orientation="Horizontal"
+                        Margin="5">
+                <Button Margin="5" Command="{Binding SaveCommand}">Save</Button>
+                <Button Margin="5" Command="{Binding CloseCommand}">Close</Button>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

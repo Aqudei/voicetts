@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31019.35
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceTTS", "VoiceTTS\VoiceTTS.csproj", "{5E9F4657-B9FF-4FAC-BD84-5DDD8E3FDC05}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "VoiceTTS-Setup", "VoiceTTS-Setup\VoiceTTS-Setup.vdproj", "{1728ACF8-C3BD-4734-BC99-F17046AF1782}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5E9F4657-B9FF-4FAC-BD84-5DDD8E3FDC05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E9F4657-B9FF-4FAC-BD84-5DDD8E3FDC05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E9F4657-B9FF-4FAC-BD84-5DDD8E3FDC05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E9F4657-B9FF-4FAC-BD84-5DDD8E3FDC05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1728ACF8-C3BD-4734-BC99-F17046AF1782}.Debug|Any CPU.ActiveCfg = Debug
+		{1728ACF8-C3BD-4734-BC99-F17046AF1782}.Release|Any CPU.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CA8B0E0E-45D4-4625-9D57-C8B345FAA727}
+	EndGlobalSection
+EndGlobal

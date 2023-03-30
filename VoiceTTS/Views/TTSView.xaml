@@ -1,0 +1,415 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:prism="http://prismlibrary.com/"    
+
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls" mc:Ignorable="d" x:Class="VoiceTTS.Views.TTSView"             
+             mah:DialogParticipation.Register="{Binding}"
+             prism:ViewModelLocator.AutoWireViewModel="True" d:DesignWidth="1049.6" d:DesignHeight="654">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Vertical" Margin="20">
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <!--Engine-->
+                    <Label Content="Engine"/>
+                    <ComboBox ItemsSource="{Binding Engines}" SelectedItem="{Binding Engine}"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <!--Engine-->
+                    <Label Content="Effect"/>
+                    <ComboBox ItemsSource="{Binding Effects}" SelectedItem="{Binding Effect}"/>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Margin="20" Grid.Column="1" >
+
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <!--Engine-->
+                    <Label Content="Language Code Filter"/>
+                    <TextBox Text="{Binding LanguageCodeFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <!--Engine-->
+                    <Label Content="Language Code"/>
+                    <ComboBox ItemsSource="{Binding LanguageCodes}" SelectedItem="{Binding LanguageCode}"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <!--Engine-->
+                    <Label Content="Voice Id"/>
+                    <ComboBox ItemsSource="{Binding VoiceIds}" SelectedItem="{Binding VoiceId}"/>
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Grid.Column="2" Margin="20" >
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <Label Content="Master Speed"/>
+                    <Grid >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Slider Maximum="{Binding MaxSpeed}"
+                                Minimum="{Binding MinSpeed}" 
+                                Value="{Binding MasterSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                SmallChange="1" 
+                                mah:SliderHelper.TrackValueFillBrush="{DynamicResource MahApps.Brushes.SystemControlBackgroundBaseMedium}" IsSnapToTickEnabled="True" 
+                                mah:SliderHelper.TrackValueFillHoverBrush="Gray" 
+                                mah:SliderHelper.TrackValueFillPressedBrush="Gray"/>
+                        <mah:NumericUpDown Grid.Column="1" 
+                                           Maximum="{Binding MaxSpeed}"
+                                           Minimum="{Binding MinSpeed}"
+                                           Value="{Binding MasterSpeed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                           Width="80" Margin="2" />
+                    </Grid>
+
+                    <!--<mah:NumericUpDown Minimum="-100" 
+                                       Maximum="100"
+                                       NumericInputMode="Numbers"
+                                       ParsingNumberStyle="Integer"/>-->
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <Label Content="Master Volume"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Slider Maximum="{Binding MaxVolume}"
+                                Minimum="{Binding MinVolume}"
+                                SmallChange="1"
+                                Value="{Binding MasterVolume, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                mah:SliderHelper.TrackValueFillBrush="{DynamicResource MahApps.Brushes.SystemControlBackgroundBaseMedium}" 
+                                IsSnapToTickEnabled="True" 
+                                mah:SliderHelper.TrackValueFillHoverBrush="Gray" 
+                                mah:SliderHelper.TrackValueFillPressedBrush="Gray" />
+                        <mah:NumericUpDown Grid.Column="1"
+                                           Maximum="{Binding MaxVolume}"
+                                           Minimum="{Binding MinVolume}"
+                                           Value="{Binding MasterVolume, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           Width="80" Margin="2" />
+                    </Grid>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <Label Content="Master Pitch"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Slider Value="{Binding MasterPitch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Maximum="{Binding MaxPitch}"
+                                Minimum="{Binding MinPitch}"
+                                SmallChange="1" 
+                                mah:SliderHelper.TrackValueFillBrush="{DynamicResource MahApps.Brushes.SystemControlBackgroundBaseMedium}" 
+                                IsSnapToTickEnabled="True" 
+                                mah:SliderHelper.TrackValueFillHoverBrush="Gray" 
+                                mah:SliderHelper.TrackValueFillPressedBrush="Gray" />
+                        <mah:NumericUpDown Grid.Column="1"
+                                           Maximum="{Binding MaxPitch}"
+                                           Minimum="{Binding MinPitch}"
+                                           Value="{Binding MasterPitch, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                           Width="80" Margin="2" />
+                    </Grid>
+
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="5">
+                    <!--Engine-->
+                    <Label Content="Output"/>
+                    <ComboBox ItemsSource="{Binding Devices}" 
+                              DisplayMemberPath="Item2"
+                              SelectedItem="{Binding OutputDevice}"/>
+                </StackPanel>
+            </StackPanel>
+
+            <GroupBox Margin="2" 
+                      Header="Presets" 
+                      Grid.Column="3">
+                <Grid >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <ListBox ItemsSource="{Binding Profiles}"
+                             SelectedItem="{Binding Profile}"
+                             DisplayMemberPath="ProfileName" />
+
+                    <StackPanel Margin="2"
+                                Orientation="Vertical"
+                                Grid.Column="1">
+                        <Button Width="64" 
+                                Command="{Binding SaveProfileCommand}"
+                                Margin="2" Content="Save"/>
+                        <!--<Button Width="64" Margin="2"
+                                Command="{Binding ActivateProfileCommand}">Activate</Button>-->
+                        <Button Width="64" Margin="2" 
+                                Command="{Binding RenameProfileCommand}"
+                                Content="Rename"/>
+                       
+                    </StackPanel>
+                </Grid>
+            </GroupBox>
+
+        </Grid>
+        <Grid  Grid.Row="1" Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal">
+                <Button  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="EFFECT">
+                    <StackPanel Orientation="Vertical">
+                        <Label>Voice Effect</Label>
+                        <TextBlock Text="{Binding DefaultEffect}" HorizontalAlignment="Center" Foreground="#FF2A912F"/>
+                    </StackPanel>
+                </Button>
+                <Button  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="PAUSE">
+                    <StackPanel Orientation="Vertical">
+                        <Label>Pause</Label>
+                        <TextBlock Text="{Binding DefaultPause}" HorizontalAlignment="Center" Foreground="#FF2A912F"/>
+                    </StackPanel>
+                </Button>
+
+                <Button  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="EMPHASIS">
+                    <StackPanel Orientation="Vertical">
+                        <Label>Emphasis</Label>
+                        <TextBlock Text="{Binding DefaultEmphasis}" HorizontalAlignment="Center" Foreground="#FF2A912F"/>
+                    </StackPanel>
+                </Button>
+                <Button  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="SPEED">
+                    <StackPanel Orientation="Vertical">
+                        <Label>Speed</Label>
+                        <TextBlock Text="{Binding DefaultSpeed}" HorizontalAlignment="Center" Foreground="#FF2A912F"/>
+                    </StackPanel>
+                </Button>
+                <Button  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="PITCH">
+                    <StackPanel Orientation="Vertical">
+                        <Label>Pitch</Label>
+                        <TextBlock Text="{Binding DefaultPitch}" HorizontalAlignment="Center" Foreground="#FF2A912F"/>
+                    </StackPanel>
+                </Button>
+                <Button  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="VOLUME">
+                    <StackPanel Orientation="Vertical">
+                        <Label>Volume</Label>
+                        <TextBlock Text="{Binding DefaultVolume}" HorizontalAlignment="Center" Foreground="#FF2A912F"/>
+                    </StackPanel>
+                </Button>
+                <Button  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="SAYAS">
+                    <StackPanel Orientation="Vertical">
+                        <Label>Say as</Label>
+                        <TextBlock Text="{Binding DefaultSayAs}" HorizontalAlignment="Center" Foreground="#FF2A912F"/>
+                    </StackPanel>
+                </Button>
+                <Button Margin="5,5,5,4.8"
+                        Command="{Binding SetupDefaultsCommand}"
+                        Content="Setup" 
+                        HorizontalAlignment="Right" 
+                        HorizontalContentAlignment="Center" 
+                        FontSize="16" Width="81">
+                    <Button.Background>
+                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.WindowFrameColorKey}}"/>
+                    </Button.Background>
+                </Button>
+                <Button Margin="5,5,5,4.8"
+                    Command="{Binding SetupHotKeysCommand}"
+                    Content="HotKeys" 
+                    HorizontalAlignment="Right" 
+                    HorizontalContentAlignment="Center" 
+                    FontSize="16" Width="91">
+                    <Button.Background>
+                        <SolidColorBrush Color="{DynamicResource {x:Static SystemColors.WindowFrameColorKey}}"/>
+                    </Button.Background>
+                </Button>
+                <!--<mah:DropDownButton Content="Voice Effect" Margin="5">
+                    <mah:DropDownButton.Items>
+                        <Button  Content="Breathing"
+                                            Command="{Binding EffectCommand}" 
+                                            CommandParameter="breathing"/>
+                        <Button Content="Soft"
+                                Command="{Binding EffectCommand}" 
+                                CommandParameter="soft"/>
+                        <Button Content="Whispered"
+                                Command="{Binding EffectCommand}" 
+                                CommandParameter="whispered"/>
+                    </mah:DropDownButton.Items>
+                </mah:DropDownButton>
+
+                <mah:DropDownButton Content="Pauses" Margin="5">
+                    <mah:DropDownButton.Items>
+                        <Button Content="0.5s"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="break-500ms"/>
+                        <Button Content="1s"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="break-1s"/>
+                        <Button Content="2s"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="break-2s"/>
+                        <Button Content="3s"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="break-3s"/>
+                        <Button Content="4s"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="break-4s"/>
+                        <Button Content="5s"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="break-5s"/>
+                        <Button Content="6s"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="break-6s"/>
+                    </mah:DropDownButton.Items>
+                </mah:DropDownButton>
+
+                <mah:DropDownButton Content="Emphasis" Margin="5">
+                    <mah:DropDownButton.Items>
+                        <Button Content="Strong"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="emphasis-level-strong"/>
+                        <Button Content="Moderate"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="emphasis-level-moderate"/>
+                        <Button Content="Reduced"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="emphasis-level-reduced"/>
+                    </mah:DropDownButton.Items>
+                </mah:DropDownButton>
+                <mah:DropDownButton Content="Speed" Margin="5">
+                    <mah:DropDownButton.Items>
+                        <Button Content="x-slow"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-rate-x_slow"/>
+                        <Button Content="Slow"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-rate-slow"/>
+                        <Button Content="Medium"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-rate-medium"/>
+                        <Button Content="Fast"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-rate-fast"/>
+                        <Button Content="x-fast"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-rate-x_fast"/>
+                    </mah:DropDownButton.Items>
+                </mah:DropDownButton>
+                <mah:DropDownButton Content="Pitch" Margin="5">
+                    <mah:DropDownButton.Items>
+                        <Button Content="x-low"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-pitch-x_low"/>
+                        <Button Content="Low"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-pitch-low"/>
+                        <Button Content="Medium"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-pitch-medium"/>
+                        <Button Content="Default"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-pitch-default"/>
+                        <Button Content="High"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-pitch-high"/>
+                        <Button Content="x-high"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-pitch-x_high"/>
+                    </mah:DropDownButton.Items>
+                </mah:DropDownButton>
+                <mah:DropDownButton Content="Volume" Margin="5">
+                    <mah:DropDownButton.Items>
+                        <Button Content="x-soft"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-volume-x_soft"/>
+                        <Button Content="Soft"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-volume-soft"/>
+                        <Button Content="Medium"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-volume-medium"/>
+                        <Button Content="Loud"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-volume-loud"/>
+                        <Button Content="x-loud"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="prosody-volume-x_loud"/>
+                    </mah:DropDownButton.Items>
+                </mah:DropDownButton>
+                <mah:DropDownButton Content="Say as" Margin="5">
+                    <mah:DropDownButton.Items>
+                        <Button Content="Address"
+                                      Command="{Binding EffectCommand}"
+                                            CommandParameter="say_as-interpret_as-address"/>
+                        <Button Content="Telephone"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="say_as-interpret_as-telephone"/>
+                        <Button Content="Spell-out"
+                                Command="{Binding EffectCommand}"
+                                CommandParameter="say_as-interpret_as-spell_out"/>
+                        <mah:DropDownButton Content="Cardinal"
+                                            Command="{Binding EffectCommand}"
+                                            CommandParameter="say_as-interpret_as-cardinal"/>
+                        <mah:DropDownButton Content="Ordinal"
+                                            Command="{Binding EffectCommand}"
+                                            CommandParameter="say_as-interpret_as-ordinal"/>
+                        <mah:DropDownButton Content="Characters"
+                                            Command="{Binding EffectCommand}"
+                                            CommandParameter="say_as-interpret_as-characters"/>
+                        <mah:DropDownButton Content="Digits"
+                                            Command="{Binding EffectCommand}"
+                                            CommandParameter="say_as-interpret_as-digits"/>
+                        <mah:DropDownButton Content="Fraction"
+                                            Command="{Binding EffectCommand}"
+                                            CommandParameter="say_as-interpret_as-fraction"/>
+                    </mah:DropDownButton.Items>
+                </mah:DropDownButton>-->
+            </StackPanel>
+            <GroupBox Grid.Column="1" 
+                  Margin="5"
+                  Header="Errors"
+                  Grid.RowSpan="3">
+                <TextBox Text="{Binding ErrorText}"
+                    Width="300"
+                    x:Name="TextBoxBody_Copy"
+                    Margin="0,0,9.6,0" 
+                    TextWrapping="Wrap"
+                    IsReadOnly="True" 
+                    IsReadOnlyCaretVisible="True" />
+            </GroupBox>
+            <TextBox Text="{Binding Body, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Name="TextBoxBody"
+                     Grid.Row="1" />
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Grid.Column="0">
+                <Button Command="{Binding SendAudioCommand}" Content="Manual Send" Margin="10" HorizontalAlignment="Right"/>
+                <StackPanel Orientation="Horizontal" Margin="50,10,0,10">
+                    <mah:NumericUpDown Width="120"
+                                       Value="{Binding AutoSendMillis, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Label VerticalAlignment="Center" Margin="5,0,0,0">Milliseconds</Label>
+                </StackPanel>
+
+                <CheckBox Content="Auto Send" 
+                          IsChecked="{Binding AutoSending, Mode=OneWayToSource, ValidatesOnNotifyDataErrors=False}"
+                          HorizontalAlignment="Right"
+                          Margin="10"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
