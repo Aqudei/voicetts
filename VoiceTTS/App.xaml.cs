@@ -8,12 +8,14 @@ using Prism.Modularity;
 using System.Windows;
 using System.Windows.Input;
 using AutoMapper;
-using CsvHelper.Configuration;
 using LiteDB;
 using MahApps.Metro.Controls.Dialogs;
+using Prism.Regions;
 using VoiceTTS.Model;
 using VoiceTTS.ViewModels;
 using Profile = VoiceTTS.Model.Profile;
+
+
 
 namespace VoiceTTS
 {
@@ -22,18 +24,22 @@ namespace VoiceTTS
     /// </summary>
     public partial class App
     {
+        private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+
         protected override Window CreateShell()
         {
+            Logger.Info($"Creating Shell...");
             return Container.Resolve<MainWindow>();
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
+            Logger.Info($"Registering Types");
+
             containerRegistry.RegisterInstance(DialogCoordinator.Instance);
-            var appLocalFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var dbPath = Path.Combine(appLocalFolder, Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName));
-            Directory.CreateDirectory(dbPath);
-            var db = new LiteDatabase(Path.Combine(dbPath, @"MyData.db"));
+            var appLocalFolder = AppDomain.CurrentDomain.BaseDirectory;
+
+            var db = new LiteDatabase(Path.Combine(appLocalFolder, "MyData.db"));
 
             var profileCollection = db.GetCollection<Profile>();
             var profiles = profileCollection.FindAll();
@@ -49,8 +55,6 @@ namespace VoiceTTS
                 }
             }
 
-
-
             containerRegistry.RegisterInstance(db);
 
             var config = new MapperConfiguration(cfg =>
@@ -65,6 +69,16 @@ namespace VoiceTTS
             containerRegistry.RegisterDialogWindow<MahappsWindow>("dialogWindow");
             containerRegistry.RegisterDialog<DefaultEditor, DefaultEditorViewModel>();
             containerRegistry.RegisterDialog<HotKeys, HotKeysViewModel>();
+
+
+
+            var regionManager = Container.Resolve<IRegionManager>();
+            regionManager.RegisterViewWithRegion("ContentRegion", typeof(TTSView));
+        }
+
+        private void PrismApplication_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            Logger.Error(e.Exception);
         }
     }
 }

@@ -18,9 +18,9 @@ namespace VoiceTTS.ViewModels
             set => SetProperty(ref _title, value);
         }
 
-        public MainWindowViewModel(IRegionManager regionManager)
+        public MainWindowViewModel()
         {
-            regionManager.RegisterViewWithRegion("ContentRegion", typeof(TTSView));
+
         }
 
         //public DelegateCommand RestartCommand => _restartCommand ??= new DelegateCommand(DoRestartApp);

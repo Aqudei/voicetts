@@ -8,8 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Prism.Commands;
 using RestSharp;
-using CsvHelper;
-using CsvHelper.Configuration;
 using Newtonsoft.Json;
 using RestSharp.Serializers.NewtonsoftJson;
 using VoiceTTS.Api;
