@@ -160,7 +160,7 @@
                         <Button Width="64" Margin="2" 
                                 Command="{Binding RenameProfileCommand}"
                                 Content="Rename"/>
-                       
+
                     </StackPanel>
                 </Grid>
             </GroupBox>
@@ -177,49 +177,61 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal">
-                <Button  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="EFFECT">
+                <!--<ToggleButton  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="EFFECT">
                     <StackPanel Orientation="Vertical">
                         <Label>Voice Effect</Label>
                         <TextBlock Text="{Binding DefaultEffect}" HorizontalAlignment="Center" Foreground="#FF2A912F"/>
                     </StackPanel>
-                </Button>
-                <Button  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="PAUSE">
+                </ToggleButton>-->
+                <ToggleButton  Width="80" Margin="5" 
+                               IsChecked="{Binding IsCheckedPause}"
+                               Command="{Binding EffectCommand}" CommandParameter="PAUSE">
                     <StackPanel Orientation="Vertical">
                         <Label>Pause</Label>
                         <TextBlock Text="{Binding DefaultPause}" HorizontalAlignment="Center" Foreground="#FF2A912F"/>
                     </StackPanel>
-                </Button>
+                </ToggleButton>
 
-                <Button  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="EMPHASIS">
+                <ToggleButton  Width="80" Margin="5"
+                               IsChecked="{Binding IsCheckedEmphasis}"
+                               Command="{Binding EffectCommand}" CommandParameter="EMPHASIS">
                     <StackPanel Orientation="Vertical">
                         <Label>Emphasis</Label>
                         <TextBlock Text="{Binding DefaultEmphasis}" HorizontalAlignment="Center" Foreground="#FF2A912F"/>
                     </StackPanel>
-                </Button>
-                <Button  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="SPEED">
+                </ToggleButton>
+                <ToggleButton  Width="80" Margin="5" 
+                               IsChecked="{Binding IsCheckedSpeed}"
+                               Command="{Binding EffectCommand}" CommandParameter="SPEED">
                     <StackPanel Orientation="Vertical">
                         <Label>Speed</Label>
                         <TextBlock Text="{Binding DefaultSpeed}" HorizontalAlignment="Center" Foreground="#FF2A912F"/>
                     </StackPanel>
-                </Button>
-                <Button  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="PITCH">
+                </ToggleButton>
+                <ToggleButton  Width="80" Margin="5"
+                               IsChecked="{Binding IsCheckedPitch}"
+                               Command="{Binding EffectCommand}" CommandParameter="PITCH">
                     <StackPanel Orientation="Vertical">
                         <Label>Pitch</Label>
                         <TextBlock Text="{Binding DefaultPitch}" HorizontalAlignment="Center" Foreground="#FF2A912F"/>
                     </StackPanel>
-                </Button>
-                <Button  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="VOLUME">
+                </ToggleButton>
+                <ToggleButton  Width="80" Margin="5" 
+                               IsChecked="{Binding IsCheckedVolume}"
+                               Command="{Binding EffectCommand}" CommandParameter="VOLUME">
                     <StackPanel Orientation="Vertical">
                         <Label>Volume</Label>
                         <TextBlock Text="{Binding DefaultVolume}" HorizontalAlignment="Center" Foreground="#FF2A912F"/>
                     </StackPanel>
-                </Button>
-                <Button  Width="80" Margin="5" Command="{Binding EffectCommand}" CommandParameter="SAYAS">
+                </ToggleButton>
+                <ToggleButton  Width="80" Margin="5" 
+                               IsChecked="{Binding IsCheckedSayAs}"
+                               Command="{Binding EffectCommand}" CommandParameter="SAYAS">
                     <StackPanel Orientation="Vertical">
                         <Label>Say as</Label>
                         <TextBlock Text="{Binding DefaultSayAs}" HorizontalAlignment="Center" Foreground="#FF2A912F"/>
                     </StackPanel>
-                </Button>
+                </ToggleButton>
                 <Button Margin="5,5,5,4.8"
                         Command="{Binding SetupDefaultsCommand}"
                         Content="Setup" 

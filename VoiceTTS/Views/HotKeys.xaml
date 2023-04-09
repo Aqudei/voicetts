@@ -24,8 +24,8 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <TextBlock>[CTRL + SHIFY + {KEY}]</TextBlock>
-        <StackPanel Orientation="Vertical" Grid.Row="1">
+        <TextBlock>[CTRL + SHIFT + {KEY}]</TextBlock>
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="0">
             <StackPanel Orientation="Horizontal" Margin="5">
                 <Label Width="100">Manual Send</Label>
                 <TextBox Text="{Binding KeyManualSend}" Width="200" MaxLines="1"/>
@@ -58,31 +58,31 @@
 
         <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1">
             <StackPanel Orientation="Horizontal" Margin="5">
-                <Label Width="150">Append Voice Effect</Label>
+                <Label Width="150">Toggle Voice Effect</Label>
                 <TextBox Text="{Binding KeyAppendVoice}" Width="200" MaxLines="1"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="5">
-                <Label Width="150">Append Pause</Label>
+                <Label Width="150">Toggle Pause</Label>
                 <TextBox Text="{Binding KeyAppendPause}" Width="200" MaxLines="1"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="5">
-                <Label Width="150">Append Emphasis</Label>
+                <Label Width="150">Toggle Emphasis</Label>
                 <TextBox Text="{Binding KeyAppendEmphasis}" Width="200" MaxLines="1"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="5">
-                <Label Width="150">Append Speed</Label>
+                <Label Width="150">Toggle Speed</Label>
                 <TextBox Text="{Binding KeyAppendSpeed}" Width="200" MaxLines="1"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="5">
-                <Label Width="150">Append Pitch</Label>
+                <Label Width="150">Toggle Pitch</Label>
                 <TextBox Text="{Binding KeyAppendPitch}" Width="200" MaxLines="1"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="5">
-                <Label Width="150">Append Volume</Label>
+                <Label Width="150">Toggle Volume</Label>
                 <TextBox Text="{Binding KeyAppendVolume}" Width="200" MaxLines="1"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="5">
-                <Label Width="150">Say As</Label>
+                <Label Width="150">Toggle Say As</Label>
                 <TextBox Text="{Binding KeyAppendSayAs}" Width="200" MaxLines="1"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="5">

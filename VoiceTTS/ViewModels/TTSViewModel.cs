@@ -77,12 +77,29 @@ namespace VoiceTTS.ViewModels
         private string _errorText;
         private readonly Dispatcher _dispatcher;
 
+        private readonly HashSet<string> _effects = new();
+
         public int MaxSpeed { get; set; } = 100;
         public int MinSpeed { get; set; } = -100;
         public int MaxVolume { get; set; } = 20;
         public int MinVolume { get; set; } = -20;
         public int MaxPitch { get; set; } = 100;
         public int MinPitch { get; set; } = -100;
+
+
+        private bool _isCheckedVolume;
+        private bool _isCheckedSayAs;
+        private bool _isCheckedPitch;
+        private bool _isCheckedPause;
+        private bool _isCheckedEmphasis;
+        private bool _isCheckedSpeed;
+
+        public bool IsCheckedVolume
+        {
+            get => _isCheckedVolume;
+            set => SetProperty(ref _isCheckedVolume, value);
+        }
+
 
         public TTSViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator, DialogService dialogService, LiteDatabase db)
         {
@@ -109,10 +126,6 @@ namespace VoiceTTS.ViewModels
                     Effect = Effects.FirstOrDefault();
                 }));
             });
-
-
-
-
 
             //using (var db = new TTSContext())
             //{
@@ -300,38 +313,77 @@ namespace VoiceTTS.ViewModels
 
         private void OnHotKeyAppendVolume(object sender, HotkeyEventArgs e)
         {
-            AddEffect("VOLUME");
+            ToggleEffect("VOLUME");
+            IsCheckedVolume = _effects.Contains("VOLUME");
         }
 
         private void OnHotKeyAppendVoice(object sender, HotkeyEventArgs e)
         {
-            AddEffect("EFFECT");
+            ToggleEffect("EFFECT");
         }
 
         private void OnHotKeyAppendSayAs(object sender, HotkeyEventArgs e)
         {
-            AddEffect("SAYAS");
+            ToggleEffect("SAYAS");
+            IsCheckedSayAs = _effects.Contains("SAYAS");
+        }
+
+        public bool IsCheckedSayAs
+        {
+            get => _isCheckedSayAs;
+            set => SetProperty(ref _isCheckedSayAs, value);
         }
 
         private void OnHotKeyAppendPitch(object sender, HotkeyEventArgs e)
         {
-            AddEffect("PITCH");
+            ToggleEffect("PITCH");
+            IsCheckedPitch = _effects.Contains("PITCH");
+
+        }
+
+        public bool IsCheckedPitch
+        {
+            get => _isCheckedPitch;
+            set => SetProperty(ref _isCheckedPitch, value);
         }
 
         private void OnHotKeyAppendPause(object sender, HotkeyEventArgs e)
         {
-            AddEffect("PAUSE");
+            ToggleEffect("PAUSE");
+            IsCheckedPause = _effects.Contains("PAUSE");
+
+        }
+
+        public bool IsCheckedPause
+        {
+            get => _isCheckedPause;
+            set => SetProperty(ref _isCheckedPause, value);
         }
 
 
         private void OnHotKeyAppendEmphasis(object sender, HotkeyEventArgs e)
         {
-            AddEffect("EMPHASIS");
+            ToggleEffect("EMPHASIS");
+            IsCheckedEmphasis = _effects.Contains("EMPHASIS");
+        }
+
+        public bool IsCheckedEmphasis
+        {
+            get => _isCheckedEmphasis;
+            set => SetProperty(ref _isCheckedEmphasis, value);
         }
 
         private void OnHotKeyAppendSpeed(object sender, HotkeyEventArgs e)
         {
-            AddEffect("SPEED");
+            ToggleEffect("SPEED");
+            IsCheckedSpeed = _effects.Contains("SPEED");
+
+        }
+
+        public bool IsCheckedSpeed
+        {
+            get => _isCheckedSpeed;
+            set => SetProperty(ref _isCheckedSpeed, value);
         }
 
         private Key ToKeyCode(string key)
@@ -351,7 +403,7 @@ namespace VoiceTTS.ViewModels
         public ObservableCollection<Profile> Profiles { get; set; } = new ObservableCollection<Profile>();
 
         public DelegateCommand<string> EffectCommand =>
-            _effectCommand ??= new DelegateCommand<string>(AddEffect);
+            _effectCommand ??= new DelegateCommand<string>(ToggleEffect);
 
         public Profile Profile
         {
@@ -373,28 +425,13 @@ namespace VoiceTTS.ViewModels
         public int AutoSendMillis
         {
             get => _autoSendMillis;
-            set
-            {
-                SetProperty(ref _autoSendMillis, value);
-            }
+            set => SetProperty(ref _autoSendMillis, value);
         }
 
         public string Body
         {
             get => _body;
-            set
-            {
-                SetProperty(ref _body, value);
-                if (_timer != null)
-                {
-                    _timer.Stop();
-                    _timer = null;
-                }
-
-                if (AutoSending)
-                    _timer = new DispatcherTimer(TimeSpan.FromMilliseconds(AutoSendMillis), DispatcherPriority.Input,
-                        AutoSendHandler, Dispatcher.CurrentDispatcher);
-            }
+            set => SetProperty(ref _body, value);
         }
 
         public string LanguageCodeFilter
@@ -598,7 +635,7 @@ namespace VoiceTTS.ViewModels
 
             if (AutoSending)
                 _timer = new DispatcherTimer(TimeSpan.FromMilliseconds(AutoSendMillis), DispatcherPriority.Input,
-                    AutoSendHandler, Dispatcher.CurrentDispatcher);
+                    AutoSendHandler, _dispatcher);
         }
 
         private void OnHotKeyManualSend(object sender, HotkeyEventArgs e)
@@ -608,26 +645,39 @@ namespace VoiceTTS.ViewModels
 
         private void TTSViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (nameof(Profile) == e.PropertyName)
-                if (Profile != null)
-                    ActivateProfile();
-
-            if (nameof(OutputDevice) == e.PropertyName)
+            switch (e.PropertyName)
             {
-                Settings.Default.OutputDevice = OutputDevice.Item2;
-                Settings.Default.Save();
-            }
+                case nameof(Profile):
+                    {
+                        if (Profile != null)
+                            ActivateProfile();
+                        break;
+                    }
+                case nameof(OutputDevice):
+                    Settings.Default.OutputDevice = OutputDevice.Item2;
+                    Settings.Default.Save();
+                    break;
+                case nameof(AutoSending):
+                    SetAutoSend(AutoSending);
+                    break;
+                case nameof(AutoSendMillis):
+                    Settings.Default.AutoSendMillis = AutoSendMillis;
+                    Settings.Default.Save();
+                    SetAutoSend(AutoSending);
+                    break;
+                case nameof(Body):
+                    {
+                        if (_timer != null)
+                        {
+                            _timer.Stop();
+                            _timer = null;
+                        }
 
-            if (nameof(AutoSending) == e.PropertyName)
-            {
-                SetAutoSend(AutoSending);
-            }
-
-            if (nameof(AutoSendMillis) == e.PropertyName)
-            {
-                Settings.Default.AutoSendMillis = AutoSendMillis;
-                Settings.Default.Save();
-                SetAutoSend(AutoSending);
+                        if (AutoSending)
+                            _timer = new DispatcherTimer(TimeSpan.FromMilliseconds(AutoSendMillis), DispatcherPriority.Input,
+                                AutoSendHandler, _dispatcher);
+                        break;
+                    }
             }
         }
 
@@ -638,32 +688,41 @@ namespace VoiceTTS.ViewModels
             profileCollection.Update(Profile);
         }
 
-        private void AddEffect(string effect)
+        private void ToggleEffect(string effect)
         {
-            switch (effect.ToUpper())
+            if (_effects.Contains(effect.ToUpper()))
             {
-                case "EFFECT":
-                    Body += $"<{DefaultEffect}></{DefaultEffect}>";
-                    break;
-                case "PAUSE":
-                    Body += $"<break time='{DefaultPause}'/>";
-                    break;
-                case "EMPHASIS":
-                    Body += $"<emphasis level='{DefaultEmphasis}'></emphasis>";
-                    break;
-                case "SPEED":
-                    Body += $"<prosody rate='{DefaultSpeed}'></prosody>";
-                    break;
-                case "PITCH":
-                    Body += $"<prosody pitch='{DefaultPitch}'></prosody>";
-                    break;
-                case "VOLUME":
-                    Body += $"<prosody volume='{DefaultVolume}'></prosody>";
-                    break;
-                case "SAYAS":
-                    Body += $"<say-as interpret-as='{DefaultSayAs}'></say-as>";
-                    break;
+                _effects.Remove(effect.ToUpper());
             }
+            else
+            {
+                _effects.Add(effect.ToUpper());
+            }
+
+            //switch (effect.ToUpper())
+            //{
+            //    case "EFFECT":
+            //        Body += $"<{DefaultEffect}></{DefaultEffect}>";
+            //        break;
+            //    case "PAUSE":
+            //        Body += $"<break time='{DefaultPause}'/>";
+            //        break;
+            //    case "EMPHASIS":
+            //        Body += $"<emphasis level='{DefaultEmphasis}'></emphasis>";
+            //        break;
+            //    case "SPEED":
+            //        Body += $"<prosody rate='{DefaultSpeed}'></prosody>";
+            //        break;
+            //    case "PITCH":
+            //        Body += $"<prosody pitch='{DefaultPitch}'></prosody>";
+            //        break;
+            //    case "VOLUME":
+            //        Body += $"<prosody volume='{DefaultVolume}'></prosody>";
+            //        break;
+            //    case "SAYAS":
+            //        Body += $"<say-as interpret-as='{DefaultSayAs}'></say-as>";
+            //        break;
+            //}
         }
 
         private void PlayAudio(string url)
@@ -681,27 +740,58 @@ namespace VoiceTTS.ViewModels
         {
             try
             {
-                await Task.Run(async () =>
+                var body = Body.Clone().ToString();
+
+                _dispatcher.BeginInvoke(new Action(() => Body = ""));
+                if (_effects.Contains("EMPHASIS"))
                 {
-                    var req = new VoiceMakerRequest
-                    {
-                        Engine = Engine,
-                        VoiceId = VoiceId,
-                        LanguageCode = LanguageCode,
-                        Text = Body,
-                        OutputFormat = "mp3",
-                        SampleRate = "48000",
-                        Effect = Effect,
-                        MasterSpeed = MasterSpeed.ToString(),
-                        MasterVolume = MasterVolume.ToString(),
-                        MasterPitch = MasterPitch.ToString()
-                    };
+                    body = $"<emphasis level='{DefaultEmphasis}'>{body}</emphasis>";
+                }
 
-                    Body = "";
+                if (_effects.Contains("SPEED"))
+                {
+                    body = $"<prosody rate='{DefaultSpeed}'>{body}</prosody>";
+                }
 
-                    var audioUrl = await _voiceMaker.GenerateAudioAsync(req);
-                    PlayAudio(audioUrl);
-                });
+                if (_effects.Contains("PITCH"))
+                {
+                    body = $"<prosody pitch='{DefaultPitch}'>{body}</prosody>";
+                }
+
+                if (_effects.Contains("VOLUME"))
+                {
+                    body = $"<prosody volume='{DefaultVolume}'>{body}</prosody>";
+                }
+
+                if (_effects.Contains("SAYAS"))
+                {
+                    body = $"<say-as interpret-as='{DefaultSayAs}'>{body}</say-as>";
+                }
+
+                if (_effects.Contains("PAUSE"))
+                {
+                    body = $"{body}<break time='{DefaultPause}'/>";
+                }
+
+                var req = new VoiceMakerRequest
+                {
+                    Engine = Engine,
+                    VoiceId = VoiceId,
+                    LanguageCode = LanguageCode,
+                    Text = body,
+                    OutputFormat = "mp3",
+                    SampleRate = "48000",
+                    Effect = Effect,
+                    MasterSpeed = MasterSpeed.ToString(),
+                    MasterVolume = MasterVolume.ToString(),
+                    MasterPitch = MasterPitch.ToString()
+                };
+
+
+
+                var audioUrl = await _voiceMaker.GenerateAudioAsync(req);
+                PlayAudio(audioUrl);
+
             }
             catch (Exception e)
             {
@@ -773,7 +863,7 @@ namespace VoiceTTS.ViewModels
             }, "dialogWindow");
         }
 
-        private void SetAutoSend(bool state)
+        private void SetAutoSend(bool autoSendState)
         {
 
             if (_timer != null)
@@ -783,10 +873,10 @@ namespace VoiceTTS.ViewModels
                 _timer = null;
             }
 
-            if (state)
+            if (autoSendState)
             {
                 _timer = new DispatcherTimer(TimeSpan.FromMilliseconds(AutoSendMillis), DispatcherPriority.Normal,
-                    AutoSendHandler, Dispatcher.CurrentDispatcher);
+                    AutoSendHandler, _dispatcher);
             }
         }
     }
