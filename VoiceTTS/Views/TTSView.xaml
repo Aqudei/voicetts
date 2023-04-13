@@ -418,7 +418,7 @@
                 </StackPanel>
 
                 <CheckBox Content="Auto Send" 
-                          IsChecked="{Binding AutoSending, Mode=OneWayToSource, ValidatesOnNotifyDataErrors=False}"
+                          IsChecked="{Binding AutoSending}"
                           HorizontalAlignment="Right"
                           Margin="10"/>
             </StackPanel>

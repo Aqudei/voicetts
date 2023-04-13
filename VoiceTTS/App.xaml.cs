@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using VoiceTTS.Views;
 using Prism.Ioc;
 using Prism.Modularity;
@@ -34,12 +35,38 @@ namespace VoiceTTS
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
+
+            // ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+
             Logger.Info($"Registering Types");
 
-            containerRegistry.RegisterInstance(DialogCoordinator.Instance);
-            var appLocalFolder = AppDomain.CurrentDomain.BaseDirectory;
+            var appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                Path.GetFileNameWithoutExtension(AppDomain.CurrentDomain.FriendlyName));
+            var globalVariables = new GlobalVariables
+            {
+                AppDataFolder = appDataFolder
+            };
 
-            var db = new LiteDatabase(Path.Combine(appLocalFolder, "MyData.db"));
+            Directory.CreateDirectory(appDataFolder);
+
+            var dbPath = Path.Combine(appDataFolder, "MyData.db");
+            globalVariables.DbPath = dbPath;
+            globalVariables.AudioPath = Path.Combine(appDataFolder, "Audio");
+            Directory.CreateDirectory(globalVariables.AudioPath);
+
+            var audioFiles = Directory.GetFiles(globalVariables.AudioPath);
+
+            for (var i = audioFiles.Length - 1; i >= 0; i--)
+            {
+                File.Delete(audioFiles[i]);
+            }
+
+
+            var db = new LiteDatabase(dbPath);
+
+            containerRegistry.RegisterInstance(DialogCoordinator.Instance);
+            containerRegistry.RegisterInstance(globalVariables);
+            containerRegistry.Register<VoiceMaker>();
 
             var profileCollection = db.GetCollection<Profile>();
             var profiles = profileCollection.FindAll();

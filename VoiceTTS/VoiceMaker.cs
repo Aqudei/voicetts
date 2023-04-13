@@ -6,28 +6,40 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Prism.Commands;
 using RestSharp;
+using RestSharp.Extensions;
 using Newtonsoft.Json;
+using RestSharp.Authenticators;
 using RestSharp.Serializers.NewtonsoftJson;
 using VoiceTTS.Api;
+using VoiceTTS.Model;
 
 namespace VoiceTTS
 {
     public class VoiceMaker
     {
+        private readonly GlobalVariables _globalVariables;
         public const string ApiUrl = "https://developer.voicemaker.in";
-
-        public RestClient RestClient { get; set; }
+        public IRestClient Client { get; set; }
 
         public static async Task<IEnumerable<VoiceInfo>> GetVoicesAsync()
         {
             var token = Environment.GetEnvironmentVariable("VOICEMAKER_KEY");
-            var client = new RestClient("https://developer.voicemaker.in/voice")
-                .AddDefaultHeader("Authorization", $"Bearer {token}")
-                .UseNewtonsoftJson();
 
-            var request = new RestRequest("/list");
+            var options = new RestClientOptions(ApiUrl)
+            {
+                Authenticator = new JwtAuthenticator(token)
+            };
+
+            var client = new RestClient(options, configureSerialization: config => config.UseNewtonsoftJson());
+
+            var request = new RestRequest("/voice/list")
+            {
+                RequestFormat = DataFormat.Json
+            };
+
             var response = await client.ExecutePostAsync<VoiceListResponse>(request);
             return response.Data.Data.VoicesList;
         }
@@ -39,7 +51,7 @@ namespace VoiceTTS
             var req = new RestRequest("/voice/api")
                 .AddStringBody(jsonBody, DataFormat.Json);
 
-            var response = await RestClient.ExecutePostAsync<VoiceMakerResponse>(req);
+            var response = await Client.ExecutePostAsync<VoiceMakerResponse>(req);
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 throw new Exception($"{response.ErrorMessage} | {response.Content} | {response.ErrorException?.Message}");
@@ -47,19 +59,29 @@ namespace VoiceTTS
 
             if (response.Data == null) return response.Data?.Path;
 
-            var audioPath = response.Data.Path.Replace("https://developer.voicemaker.in", "");
-            var audioData = await RestClient.DownloadDataAsync(new RestRequest(audioPath));
+            var uri = new Uri(response.Data.Path);
 
-            return response.Data?.Path;
+            // var audioPath = response.Data.Path.Replace("https://developer.voicemaker.in", "");
+            var audioData = await Client.DownloadDataAsync(new RestRequest(uri.AbsolutePath));
+            var outputName = Path.Combine(_globalVariables.AudioPath, Path.GetFileName(uri.AbsolutePath));
+            if (audioData == null)
+                return string.Empty;
+            File.WriteAllBytes(outputName, audioData);
+            return outputName;
+
         }
 
-        public VoiceMaker()
+        public VoiceMaker(GlobalVariables globalVariables)
         {
-            RestClient = new RestClient(ApiUrl)
-                .AddDefaultHeader("Content-Type", "application/json")
-                .AddDefaultHeader("Authorization", $"Bearer {Environment.GetEnvironmentVariable("VOICEMAKER_KEY")}")
-                .UseNewtonsoftJson();
+            _globalVariables = globalVariables;
 
+            var token = Environment.GetEnvironmentVariable("VOICEMAKER_KEY");
+            var options = new RestClientOptions(ApiUrl)
+            {
+                Authenticator = new JwtAuthenticator(token)
+            };
+
+            Client = new RestClient(options, configureSerialization: config => config.UseNewtonsoftJson());
         }
 
 
@@ -73,9 +95,6 @@ namespace VoiceTTS
             public string Country { get; set; }
             public string Language { get; set; }
             public string LanguageName { get; set; }
-
-
-
         }
     }
 }

@@ -25,6 +25,7 @@ using VoiceTTS.Model;
 using VoiceTTS.Properties;
 using Profile = VoiceTTS.Model.Profile;
 using Task = System.Threading.Tasks.Task;
+using Timer = System.Timers.Timer;
 
 namespace VoiceTTS.ViewModels
 {
@@ -33,13 +34,14 @@ namespace VoiceTTS.ViewModels
         private readonly IDialogCoordinator _dialogCoordinator;
         private readonly DialogService _dialogService;
         private readonly LiteDatabase _db;
+        private readonly GlobalVariables _globalVariables;
         private readonly HotkeyManager _hkManager = HotkeyManager.Current;
         private readonly IMapper _mapper;
         private readonly MediaPlayer _mediaPlayer = new MediaPlayer();
 
         private readonly List<VoiceMaker.VoiceInfo> _voiceInfos = new List<VoiceMaker.VoiceInfo>();
 
-        private readonly VoiceMaker _voiceMaker = new VoiceMaker();
+        private readonly VoiceMaker _voiceMaker;
         private DelegateCommand _activateProfileCommand;
         private bool _autoSending = false;
 
@@ -71,7 +73,7 @@ namespace VoiceTTS.ViewModels
         private DelegateCommand _sendAudioCommand;
         private DelegateCommand _setupDefaultsCommand;
 
-        private DispatcherTimer _timer;
+        private Timer _timer;
         private string _voiceId;
         private DelegateCommand _setupHotKeysCommand;
         private string _errorText;
@@ -101,12 +103,15 @@ namespace VoiceTTS.ViewModels
         }
 
 
-        public TTSViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator, DialogService dialogService, LiteDatabase db)
+        public TTSViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator, DialogService dialogService,
+            LiteDatabase db, GlobalVariables globalVariables, VoiceMaker voiceMaker)
         {
+            _voiceMaker = voiceMaker;
             _mapper = mapper;
             _dialogCoordinator = dialogCoordinator;
             _dialogService = dialogService;
             _db = db;
+            _globalVariables = globalVariables;
             _dispatcher = Application.Current.Dispatcher;
 
             var getVoicesTask = VoiceMaker.GetVoicesAsync().ContinueWith(task =>
@@ -610,10 +615,6 @@ namespace VoiceTTS.ViewModels
             new DelegateCommand(SetupDefaults, () => Profile != null)
                 .ObservesProperty(() => Profiles);
 
-        public DelegateCommand OnAutoSendCommand => _onAutoSendCommand ??= new DelegateCommand(() => SetAutoSend(true));
-
-        public DelegateCommand OffAutoSendCommand =>
-            _offAutoSendCommand ??= new DelegateCommand(() => SetAutoSend(false));
 
         public bool AutoSending
         {
@@ -629,13 +630,23 @@ namespace VoiceTTS.ViewModels
             DoSendAudio();
             if (_timer != null)
             {
+                _timer.Elapsed -= AutoSendHandler;
                 _timer.Stop();
                 _timer = null;
             }
 
             if (AutoSending)
-                _timer = new DispatcherTimer(TimeSpan.FromMilliseconds(AutoSendMillis), DispatcherPriority.Input,
-                    AutoSendHandler, _dispatcher);
+            {//_timer = new Timer(TimeSpan.FromMilliseconds(AutoSendMillis), DispatcherPriority.Input,
+                //    AutoSendHandler, _dispatcher);
+                _timer = new Timer
+                {
+                    Interval = AutoSendMillis,
+                    AutoReset = true
+                };
+                _timer.Elapsed += AutoSendHandler;
+                _timer.Start();
+            }
+
         }
 
         private void OnHotKeyManualSend(object sender, HotkeyEventArgs e)
@@ -654,28 +665,42 @@ namespace VoiceTTS.ViewModels
                         break;
                     }
                 case nameof(OutputDevice):
-                    Settings.Default.OutputDevice = OutputDevice.Item2;
-                    Settings.Default.Save();
-                    break;
+                    {
+                        Settings.Default.OutputDevice = OutputDevice.Item2;
+                        Settings.Default.Save();
+                        break;
+                    }
                 case nameof(AutoSending):
-                    SetAutoSend(AutoSending);
-                    break;
+                    {
+                        Task.Run(() => SetAutoSend(AutoSending));
+                        break;
+                    }
                 case nameof(AutoSendMillis):
-                    Settings.Default.AutoSendMillis = AutoSendMillis;
-                    Settings.Default.Save();
-                    SetAutoSend(AutoSending);
-                    break;
+                    {
+                        Settings.Default.AutoSendMillis = AutoSendMillis;
+                        Settings.Default.Save();
+                        SetAutoSend(AutoSending);
+                        break;
+                    }
                 case nameof(Body):
                     {
                         if (_timer != null)
                         {
+                            _timer.Elapsed -= AutoSendHandler;
                             _timer.Stop();
                             _timer = null;
                         }
 
                         if (AutoSending)
-                            _timer = new DispatcherTimer(TimeSpan.FromMilliseconds(AutoSendMillis), DispatcherPriority.Input,
-                                AutoSendHandler, _dispatcher);
+                        {
+                            _timer = new Timer
+                            {
+                                Interval = AutoSendMillis,
+                                AutoReset = true
+                            };
+                            _timer.Elapsed += AutoSendHandler;
+                            _timer.Start();
+                        }
                         break;
                     }
             }
@@ -733,7 +758,9 @@ namespace VoiceTTS.ViewModels
 
             wo.Init(mf);
             wo.Play();
-            while (wo.PlaybackState == PlaybackState.Playing) Thread.Sleep(1000);
+            while (wo.PlaybackState == PlaybackState.Playing) Thread.Sleep(200);
+
+
         }
 
         private async void DoSendAudio()
@@ -790,7 +817,8 @@ namespace VoiceTTS.ViewModels
 
 
                 var audioUrl = await _voiceMaker.GenerateAudioAsync(req);
-                PlayAudio(audioUrl);
+                if (!string.IsNullOrEmpty(audioUrl))
+                    PlayAudio(audioUrl);
 
             }
             catch (Exception e)
@@ -855,8 +883,7 @@ namespace VoiceTTS.ViewModels
 
         private void SetupHotkeys()
         {
-            var dialogParam = new DialogParameters();
-            dialogParam.Add("Profile", Profile);
+            var dialogParam = new DialogParameters { { "Profile", Profile } };
             _dialogService.ShowDialog("HotKeys", dialogParam, result =>
             {
                 ActivateProfile();
@@ -868,16 +895,22 @@ namespace VoiceTTS.ViewModels
 
             if (_timer != null)
             {
-                _timer.IsEnabled = false;
                 _timer.Stop();
+                _timer.Elapsed -= AutoSendHandler;
                 _timer = null;
             }
 
             if (autoSendState)
             {
-                _timer = new DispatcherTimer(TimeSpan.FromMilliseconds(AutoSendMillis), DispatcherPriority.Normal,
-                    AutoSendHandler, _dispatcher);
+                _timer = new Timer
+                {
+                    Interval = AutoSendMillis,
+                    AutoReset = true
+                };
+                _timer.Elapsed += AutoSendHandler;
+                _timer.Start();
             }
         }
+
     }
 }

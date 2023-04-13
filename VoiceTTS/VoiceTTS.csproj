@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>VoiceTTS</RootNamespace>
     <AssemblyName>VoiceTTS</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -31,7 +31,7 @@
     <ProductName>VoiceTTS</ProductName>
     <PublisherName>Niceeight</PublisherName>
     <SuiteName>Voice</SuiteName>
-    <ApplicationRevision>30</ApplicationRevision>
+    <ApplicationRevision>31</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -97,6 +97,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Api\VoiceListResponse.cs" />
+    <Compile Include="Model\GlobalVariables.cs" />
     <Compile Include="Model\HotkeySet.cs" />
     <Compile Include="Model\Profile.cs" />
     <Compile Include="ViewModels\DefaultEditorViewModel.cs" />
@@ -177,7 +178,7 @@
       <Version>5.0.16</Version>
     </PackageReference>
     <PackageReference Include="MahApps.Metro">
-      <Version>2.4.5</Version>
+      <Version>2.4.9</Version>
     </PackageReference>
     <PackageReference Include="MahApps.Metro.IconPacks">
       <Version>4.11.0</Version>
@@ -195,10 +196,10 @@
       <Version>8.1.97</Version>
     </PackageReference>
     <PackageReference Include="RestSharp">
-      <Version>107.3.0</Version>
+      <Version>110.2.0</Version>
     </PackageReference>
     <PackageReference Include="RestSharp.Serializers.NewtonsoftJson">
-      <Version>107.3.0</Version>
+      <Version>110.2.0</Version>
     </PackageReference>
     <PackageReference Include="TaskScheduler">
       <Version>2.10.1</Version>
