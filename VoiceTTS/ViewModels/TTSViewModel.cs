@@ -769,7 +769,8 @@ namespace VoiceTTS.ViewModels
             {
                 var body = Body.Clone().ToString();
 
-                _dispatcher.BeginInvoke(new Action(() => Body = ""));
+                await _dispatcher.InvokeAsync(new Action(() => Body = ""));
+
                 if (_effects.Contains("EMPHASIS"))
                 {
                     body = $"<emphasis level='{DefaultEmphasis}'>{body}</emphasis>";
