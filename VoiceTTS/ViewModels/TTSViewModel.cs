@@ -496,7 +496,27 @@ namespace VoiceTTS.ViewModels
             set => SetProperty(ref _voiceId, value);
         }
 
-        public string[] Effects { get; set; } = { "default", "breathing", "soft", "whispered", "conversational", "news" };
+        public HashSet<string> Effects { get; set; } = new HashSet<string> {
+            "default",
+            "breathing",
+            "soft",
+            "conversational",
+            "news",
+            "customersupport",
+            "assistant",
+            "empathic",
+            "clam",
+            "whispered",
+            "happy",
+            "sad",
+            "angry",
+            "excited",
+            "friendly",
+            "hopeful",
+            "shouting",
+            "terrified",
+            "unfriendly"
+        };
 
         public string Effect
         {
