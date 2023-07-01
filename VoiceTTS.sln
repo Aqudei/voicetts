@@ -5,6 +5,8 @@ VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoiceTTS", "VoiceTTS\VoiceTTS.csproj", "{5E9F4657-B9FF-4FAC-BD84-5DDD8E3FDC05}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "VoiceTTS-Setup", "VoiceTTS-Setup\VoiceTTS-Setup.vdproj", "{6FF03315-DBEF-4652-9E81-31686341346B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{5E9F4657-B9FF-4FAC-BD84-5DDD8E3FDC05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E9F4657-B9FF-4FAC-BD84-5DDD8E3FDC05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E9F4657-B9FF-4FAC-BD84-5DDD8E3FDC05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FF03315-DBEF-4652-9E81-31686341346B}.Debug|Any CPU.ActiveCfg = Debug
+		{6FF03315-DBEF-4652-9E81-31686341346B}.Debug|Any CPU.Build.0 = Debug
+		{6FF03315-DBEF-4652-9E81-31686341346B}.Release|Any CPU.ActiveCfg = Release
+		{6FF03315-DBEF-4652-9E81-31686341346B}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

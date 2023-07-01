@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using AutoMapper;
+using ImTools;
 using LiteDB;
 using MahApps.Metro.Controls.Dialogs;
 using NAudio.Wave;
@@ -33,7 +35,7 @@ namespace VoiceTTS.ViewModels
     {
         private readonly IDialogCoordinator _dialogCoordinator;
         private readonly DialogService _dialogService;
-        private readonly LiteDatabase _db;
+        private readonly LiteDatabase _database;
         private readonly GlobalVariables _globalVariables;
         private readonly HotkeyManager _hkManager = HotkeyManager.Current;
         private readonly IMapper _mapper;
@@ -96,6 +98,8 @@ namespace VoiceTTS.ViewModels
         private bool _isCheckedEmphasis;
         private bool _isCheckedSpeed;
 
+        private ConcurrentQueue<VoiceMakerRequest> _voiceRequests = new();
+
         public bool IsCheckedVolume
         {
             get => _isCheckedVolume;
@@ -104,20 +108,19 @@ namespace VoiceTTS.ViewModels
 
 
         public TTSViewModel(IMapper mapper, IDialogCoordinator dialogCoordinator, DialogService dialogService,
-            LiteDatabase db, GlobalVariables globalVariables, VoiceMaker voiceMaker)
+            LiteDatabase database, GlobalVariables globalVariables, VoiceMaker voiceMaker)
         {
             _voiceMaker = voiceMaker;
             _mapper = mapper;
             _dialogCoordinator = dialogCoordinator;
             _dialogService = dialogService;
-            _db = db;
+            _database = database;
             _globalVariables = globalVariables;
             _dispatcher = Application.Current.Dispatcher;
 
             var getVoicesTask = VoiceMaker.GetVoicesAsync().ContinueWith(task =>
             {
-
-                _dispatcher.BeginInvoke(new Action(() =>
+                _dispatcher.Invoke(new Action(() =>
                 {
                     _voiceInfos.AddRange(task.Result);
                     Engines.AddRange(_voiceInfos.Select(v => v.Engine).Where(v => !string.IsNullOrWhiteSpace(v)).ToHashSet());
@@ -138,7 +141,7 @@ namespace VoiceTTS.ViewModels
             //    Profiles.AddRange(db.Profiles.ToList());
             //}
 
-            var profilesCollection = _db.GetCollection<Profile>();
+            var profilesCollection = _database.GetCollection<Profile>();
             Profiles.AddRange(profilesCollection.FindAll());
 
             if (Profiles.Any())
@@ -161,6 +164,34 @@ namespace VoiceTTS.ViewModels
 
             AutoSendMillis = Settings.Default.AutoSendMillis;
             PropertyChanged += TTSViewModel_PropertyChanged;
+
+
+            Task.Run(VoiceRequester);
+        }
+
+        private async Task VoiceRequester()
+        {
+            while (true)
+            {
+                try
+                {
+                    Thread.Sleep(4);
+
+                    if (_voiceRequests.TryDequeue(out var voiceMakerRequest))
+                    {
+                        var audioUrl = await _voiceMaker.GenerateAudioAsync(voiceMakerRequest);
+                        if (!string.IsNullOrEmpty(audioUrl))
+                            PlayAudio(audioUrl);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    await _dispatcher.InvokeAsync(() =>
+                    {
+                        ErrorText += ex.Message;
+                    });
+                }
+            }
         }
 
         private void InitHotkeys()
@@ -635,11 +666,15 @@ namespace VoiceTTS.ViewModels
             new DelegateCommand(SetupDefaults, () => Profile != null)
                 .ObservesProperty(() => Profiles);
 
-
+        public bool NotAutoSending => !AutoSending;
         public bool AutoSending
         {
             get => _autoSending;
-            set => SetProperty(ref _autoSending, value);
+            set
+            {
+                SetProperty(ref _autoSending, value);
+                RaisePropertyChanged(nameof(NotAutoSending));
+            }
         }
 
         private void AutoSendHandler(object sender, EventArgs e)
@@ -728,7 +763,7 @@ namespace VoiceTTS.ViewModels
 
         private void SaveProfile()
         {
-            var profileCollection = _db.GetCollection<Profile>();
+            var profileCollection = _database.GetCollection<Profile>();
             _mapper.Map(this, Profile);
             profileCollection.Update(Profile);
         }
@@ -778,9 +813,8 @@ namespace VoiceTTS.ViewModels
 
             wo.Init(mf);
             wo.Play();
-            while (wo.PlaybackState == PlaybackState.Playing) Thread.Sleep(200);
-
-
+            while (wo.PlaybackState == PlaybackState.Playing)
+                Thread.Sleep(32);
         }
 
         private async void DoSendAudio()
@@ -835,12 +869,7 @@ namespace VoiceTTS.ViewModels
                     MasterPitch = MasterPitch.ToString()
                 };
 
-
-
-                var audioUrl = await _voiceMaker.GenerateAudioAsync(req);
-                if (!string.IsNullOrEmpty(audioUrl))
-                    PlayAudio(audioUrl);
-
+                _voiceRequests.Enqueue(req);
             }
             catch (Exception e)
             {
@@ -858,7 +887,7 @@ namespace VoiceTTS.ViewModels
                 ProfileName = result;
 
 
-                var profileCollection = _db.GetCollection<Profile>();
+                var profileCollection = _database.GetCollection<Profile>();
                 profileCollection.Update(Profile);
             }
         }
@@ -891,7 +920,7 @@ namespace VoiceTTS.ViewModels
             {
                 if (r.Result == ButtonResult.OK)
                 {
-                    var profileCollection = _db.GetCollection<Profile>();
+                    var profileCollection = _database.GetCollection<Profile>();
                     var updatedProfile = profileCollection.FindOne(p => p.Id == Id);
                     _mapper.Map(updatedProfile, this);
                     var existingProfile = Profiles.FirstOrDefault(p => p.Id == updatedProfile.Id);

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <configSections>
+    <sectionGroup name="userSettings" type="System.Configuration.UserSettingsGroup, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+      <section name="VoiceTTS.Properties.Settings" type="System.Configuration.ClientSettingsSection, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" allowExeDefinition="MachineToLocalUser" requirePermission="false" />
+    </sectionGroup>
+  </configSections>
+  <userSettings>
+    <VoiceTTS.Properties.Settings>
+      <setting name="OutputDevice" serializeAs="String">
+        <value />
+      </setting>
+      <setting name="AutoSendMillis" serializeAs="String">
+        <value>2000</value>
+      </setting>
+      <setting name="KeyManualSend" serializeAs="String">
+        <value>A</value>
+      </setting>
+      <setting name="KeyVolumeUp" serializeAs="String">
+        <value>B</value>
+      </setting>
+      <setting name="KeyVolumeDown" serializeAs="String">
+        <value>C</value>
+      </setting>
+      <setting name="KeyPitchDown" serializeAs="String">
+        <value>D</value>
+      </setting>
+      <setting name="KeyPitchUp" serializeAs="String">
+        <value>E</value>
+      </setting>
+      <setting name="KeySpeedDown" serializeAs="String">
+        <value>F</value>
+      </setting>
+      <setting name="KeySpeedUp" serializeAs="String">
+        <value>G</value>
+      </setting>
+      <setting name="KeyAppendVoice" serializeAs="String">
+        <value>H</value>
+      </setting>
+      <setting name="KeyAppendPause" serializeAs="String">
+        <value>I</value>
+      </setting>
+      <setting name="KeyAppendEmphasis" serializeAs="String">
+        <value>J</value>
+      </setting>
+      <setting name="KeyAppendSpeed" serializeAs="String">
+        <value>K</value>
+      </setting>
+      <setting name="KeyAppendPitch" serializeAs="String">
+        <value>L</value>
+      </setting>
+      <setting name="KeyAppendVolume" serializeAs="String">
+        <value>M</value>
+      </setting>
+      <setting name="KeyAppendSayAs" serializeAs="String">
+        <value>N</value>
+      </setting>
+    </VoiceTTS.Properties.Settings>
+  </userSettings>
+  <startup>
+    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.7.2" />
+  </startup>
+  <runtime>
+    <assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+      <dependentAssembly>
+        <assemblyIdentity name="System.Runtime.CompilerServices.Unsafe" publicKeyToken="b03f5f7f11d50a3a" culture="neutral" />
+        <bindingRedirect oldVersion="0.0.0.0-6.0.0.0" newVersion="6.0.0.0" />
+      </dependentAssembly>
+    </assemblyBinding>
+  </runtime>
+</configuration>

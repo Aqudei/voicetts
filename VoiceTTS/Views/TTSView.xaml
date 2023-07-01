@@ -396,7 +396,7 @@
             </StackPanel>
             <GroupBox Grid.Column="1" 
                   Margin="5"
-                  Header="Errors"
+                  Header="DEBUG"
                   Grid.RowSpan="3">
                 <TextBox Text="{Binding ErrorText}"
                     Width="300"
@@ -410,9 +410,12 @@
                      Name="TextBoxBody"
                      Grid.Row="1" />
             <StackPanel Grid.Row="2" Orientation="Horizontal" Grid.Column="0">
-                <Button Command="{Binding SendAudioCommand}" Content="Manual Send" Margin="10" HorizontalAlignment="Right"/>
+                <Button Command="{Binding SendAudioCommand}" 
+                        IsEnabled="{Binding NotAutoSending}"
+                        Content="Manual Send" Margin="10" HorizontalAlignment="Right"/>
                 <StackPanel Orientation="Horizontal" Margin="50,10,0,10">
                     <mah:NumericUpDown Width="120"
+                                       IsEnabled="{Binding NotAutoSending}"
                                        Value="{Binding AutoSendMillis, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                     <Label VerticalAlignment="Center" Margin="5,0,0,0">Milliseconds</Label>
                 </StackPanel>
